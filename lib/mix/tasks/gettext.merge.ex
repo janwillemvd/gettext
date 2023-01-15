@@ -76,8 +76,8 @@ defmodule Mix.Tasks.Gettext.Merge do
   by checking the value of `nplurals` in the `Plural-Forms` header in the existing `.po` file. If
   a `.po` file doesn't already exist and Gettext is creating a new one or if the `Plural-Forms`
   header is not in the `.po` file, Gettext will use the number of plural forms that
-  `Gettext.Plural` returns for the locale of the file being created. The number of plural forms
-  can be forced through the `--plural-forms` option (see below).
+  `Gettext.Plural` returns for the locale of the file being created. The content of the plural forms
+  header can be forced through the `--plural-forms-header` option (see below).
 
   ## Options
 
@@ -94,9 +94,9 @@ defmodule Mix.Tasks.Gettext.Merge do
       match. Overrides the global `:fuzzy_threshold` option (see the docs for
       `Gettext` for more information on this option).
 
-    * `--plural-forms` - an integer strictly greater than `0`. If this is passed,
-      new messages in the target PO files will have this number of empty
-      plural forms. See the "Plural forms" section above.
+    * `--plural-forms-header` - `Plural-Forms` header content as string.
+      If this is passed, new messages in the target PO files will have this
+      number of empty plural forms. See the "Plural forms" section above.
 
     * `--on-obsolete` - controls what happens when obsolete messages are found.
       If `mark_as_obsolete`, messages are kept and marked as obsolete.
@@ -117,6 +117,7 @@ defmodule Mix.Tasks.Gettext.Merge do
     fuzzy: :boolean,
     fuzzy_threshold: :float,
     plural_forms: :integer,
+    plural_forms_header: :string,
     on_obsolete: :string,
     store_previous_message_on_fuzzy_match: :boolean
   ]
@@ -273,6 +274,7 @@ defmodule Mix.Tasks.Gettext.Merge do
         :fuzzy,
         :fuzzy_threshold,
         :plural_forms,
+        :plural_forms_header,
         :on_obsolete,
         :store_previous_message_on_fuzzy_match
       ])
@@ -287,6 +289,10 @@ defmodule Mix.Tasks.Gettext.Merge do
 
     unless threshold >= 0.0 and threshold <= 1.0 do
       Mix.raise("The :fuzzy_threshold option must be a float >= 0.0 and <= 1.0")
+    end
+
+    unless opts[:plural_forms] == nil do
+      Mix.raise("The :plural_forms option is deprecated in favor of :plural_forms_header")
     end
 
     opts
